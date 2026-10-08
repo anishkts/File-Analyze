@@ -78,16 +78,17 @@ export async function runOfflineSimulatedResearch(
     const bestMatch = searchResults.matches[0];
     onStatusUpdate?.(`Reading ${bestMatch.sectionNumber}: ${bestMatch.title}...`);
 
+    const sectionIdentifier = bestMatch.sectionNumber || bestMatch.title || 'Section 1';
     steps.push({
       round: 3,
       toolName: 'get_section',
-      args: { sectionNumberOrTitle: bestMatch.sectionNumber, documentId: bestMatch.documentId },
-      statusText: `Reading full text of ${bestMatch.sectionNumber}...`,
+      args: { sectionNumberOrTitle: sectionIdentifier, documentId: bestMatch.documentId },
+      statusText: `Reading full text of ${sectionIdentifier}...`,
       timestamp: new Date().toISOString(),
     });
 
     const fullSec = await tools.get_section.execute({
-      sectionNumberOrTitle: bestMatch.sectionNumber,
+      sectionNumberOrTitle: sectionIdentifier,
       documentId: bestMatch.documentId,
     });
 
