@@ -134,7 +134,7 @@ export function getDb(customPath?: string): Database.Database {
 export function insertDocument(doc: DocumentRecord, customPath?: string): void {
   const db = getDb(customPath);
   const stmt = db.prepare(`
-    INSERT INTO documents (
+    INSERT OR REPLACE INTO documents (
       id, filename, file_type, file_path, file_size, page_count, extracted_text, is_scanned, html_content
     ) VALUES (
       ?, ?, ?, ?, ?, ?, ?, ?, ?
@@ -201,7 +201,7 @@ export function deleteDocument(id: string, customPath?: string): void {
 export function insertSections(sections: SectionRecord[], customPath?: string): void {
   const db = getDb(customPath);
   const insertSec = db.prepare(`
-    INSERT INTO document_sections (
+    INSERT OR REPLACE INTO document_sections (
       id, document_id, section_number, title, content, start_char, end_char, page_number
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `);
@@ -210,6 +210,11 @@ export function insertSections(sections: SectionRecord[], customPath?: string): 
   `);
 
   const tx = db.transaction((secs: SectionRecord[]) => {
+    if (secs.length > 0) {
+      const docId = secs[0].documentId;
+      db.prepare('DELETE FROM document_sections WHERE document_id = ?').run(docId);
+      db.prepare('DELETE FROM document_fts WHERE document_id = ?').run(docId);
+    }
     for (const s of secs) {
       insertSec.run(
         s.id,
