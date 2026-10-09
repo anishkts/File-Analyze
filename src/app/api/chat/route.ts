@@ -170,18 +170,6 @@ export async function POST(req: NextRequest) {
       messages: formattedMessages,
       tools,
       maxSteps: 6, // Hard round cap requirement
-      onStepFinish: (step) => {
-        if (step.toolCalls && step.toolCalls.length > 0) {
-          for (const tc of step.toolCalls) {
-            accumulatedSteps.push({
-              toolName: tc.toolName,
-              args: (tc as any).args,
-              statusText: `Executed ${tc.toolName}`,
-              timestamp: new Date().toISOString(),
-            });
-          }
-        }
-      },
     });
 
     const responseStream = new ReadableStream({
@@ -193,22 +181,40 @@ export async function POST(req: NextRequest) {
         );
 
         try {
-          for await (const chunk of aiStream.textStream) {
-            fullResponseText += chunk;
-            controller.enqueue(
-              encoder.encode(
-                `data: ${JSON.stringify({ type: 'token', text: chunk })}\n\n`
-              )
-            );
-          }
-
-          // Emit tool execution steps
-          for (const step of accumulatedSteps) {
-            controller.enqueue(
-              encoder.encode(
-                `data: ${JSON.stringify({ type: 'step', step })}\n\n`
-              )
-            );
+          for await (const part of aiStream.fullStream) {
+            if (part.type === 'text-delta') {
+              fullResponseText += part.textDelta;
+              controller.enqueue(
+                encoder.encode(
+                  `data: ${JSON.stringify({ type: 'token', text: part.textDelta })}\n\n`
+                )
+              );
+            } else if (part.type === 'tool-call') {
+              controller.enqueue(
+                encoder.encode(
+                  `data: ${JSON.stringify({
+                    type: 'status',
+                    status: `Researching: executing ${part.toolName}...`,
+                  })}\n\n`
+                )
+              );
+            } else if (part.type === 'tool-result') {
+              const step = {
+                toolName: part.toolName,
+                args: part.args,
+                statusText: `Executed ${part.toolName}`,
+                timestamp: new Date().toISOString(),
+              };
+              accumulatedSteps.push(step);
+              controller.enqueue(
+                encoder.encode(
+                  `data: ${JSON.stringify({ type: 'step', step })}\n\n`
+                )
+              );
+            } else if (part.type === 'error') {
+              console.error('aiStream fullStream error part:', part.error);
+              throw part.error;
+            }
           }
 
           // 5. Verification Pass on all cited quotes
@@ -262,7 +268,7 @@ export async function POST(req: NextRequest) {
           controller.close();
         } catch (streamErr: any) {
           console.error('Streaming error:', streamErr);
-          // If aborted or error, still save what we had
+          // If partial response was generated, save it
           if (fullResponseText.trim()) {
             const partialId = `msg-${crypto.randomUUID()}`;
             insertChatMessage({
@@ -270,9 +276,19 @@ export async function POST(req: NextRequest) {
               sessionId,
               role: 'assistant',
               content: fullResponseText,
+              toolCalls: accumulatedSteps,
             });
           }
-          controller.error(streamErr);
+          controller.enqueue(
+            encoder.encode(
+              `data: ${JSON.stringify({
+                type: 'token',
+                text: `\n\n⚠️ **Error during research**: ${streamErr?.message || 'Unable to complete response'}`,
+              })}\n\n`
+            )
+          );
+          controller.enqueue(encoder.encode(`data: [DONE]\n\n`));
+          controller.close();
         }
       },
     });

@@ -22,7 +22,13 @@ export function getAiModel() {
     const google = createGoogleGenerativeAI({
       apiKey: geminiKey,
     });
-    const modelName = process.env.GEMINI_MODEL_NAME || 'gemini-1.5-flash';
+    let modelName = (process.env.GEMINI_MODEL_NAME || 'gemini-2.5-flash').trim();
+    // Normalize deprecated Gemini 1.5 models to active Gemini 2.5 equivalents
+    if (modelName === 'gemini-1.5-flash') {
+      modelName = 'gemini-2.5-flash';
+    } else if (modelName === 'gemini-1.5-pro') {
+      modelName = 'gemini-2.5-pro';
+    }
     return google(modelName);
   }
 

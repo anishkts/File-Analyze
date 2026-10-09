@@ -1,19 +1,18 @@
+import { tool } from 'ai';
+import { z } from 'zod';
 import { getDocumentSections, searchSectionsFTS, getDocument } from '../db';
 
 export function createContractTools(documentIds: string[], customDbPath?: string) {
   return {
-    list_clauses: {
+    list_clauses: tool({
       description: 'List the table of contents and all clause section numbers and titles for a contract.',
-      parameters: {
-        type: 'object',
-        properties: {
-          documentId: {
-            type: 'string',
-            description: 'The ID of the document to inspect. Defaults to the first document if omitted.',
-          },
-        },
-      },
-      execute: async ({ documentId }: { documentId?: string }) => {
+      parameters: z.object({
+        documentId: z
+          .string()
+          .optional()
+          .describe('The ID of the document to inspect. Defaults to the first document if omitted.'),
+      }),
+      execute: async ({ documentId }) => {
         try {
           const targetDocId = documentId || documentIds[0];
           const sections = getDocumentSections(targetDocId, customDbPath);
@@ -30,25 +29,20 @@ export function createContractTools(documentIds: string[], customDbPath?: string
           return { error: `Failed to list clauses: ${error.message}` };
         }
       },
-    },
+    }),
 
-    search_document: {
+    search_document: tool({
       description: 'Search contract text using full-text search keywords across all clauses.',
-      parameters: {
-        type: 'object',
-        properties: {
-          query: {
-            type: 'string',
-            description: 'Search query terms or keywords (e.g. "liability cap", "termination", "confidentiality").',
-          },
-          documentId: {
-            type: 'string',
-            description: 'The ID of the document to search. If omitted, searches across all active documents.',
-          },
-        },
-        required: ['query'],
-      },
-      execute: async ({ query, documentId }: { query: string; documentId?: string }) => {
+      parameters: z.object({
+        query: z
+          .string()
+          .describe('Search query terms or keywords (e.g. "liability cap", "termination", "confidentiality").'),
+        documentId: z
+          .string()
+          .optional()
+          .describe('The ID of the document to search. If omitted, searches across all active documents.'),
+      }),
+      execute: async ({ query, documentId }) => {
         try {
           const targetDocIds = documentId ? [documentId] : documentIds;
           const allMatches = [];
@@ -76,24 +70,19 @@ export function createContractTools(documentIds: string[], customDbPath?: string
           return { error: `Search error: ${error.message}` };
         }
       },
-    },
+    }),
 
-    get_section: {
+    get_section: tool({
       description: 'Retrieve the complete full text of a specific section or clause in a contract.',
-      parameters: {
-        type: 'object',
-        properties: {
-          sectionNumberOrTitle: {
-            type: 'string',
-            description: 'The section number (e.g., "Section 8", "1.2") or section title to fetch.',
-          },
-          documentId: {
-            type: 'string',
-            description: 'The ID of the document. If omitted, checks active documents.',
-          },
-        },
-        required: ['sectionNumberOrTitle'],
-      },
+      parameters: z.object({
+        sectionNumberOrTitle: z
+          .string()
+          .describe('The section number (e.g., "Section 8", "1.2") or section title to fetch.'),
+        documentId: z
+          .string()
+          .optional()
+          .describe('The ID of the document. If omitted, checks active documents.'),
+      }),
       execute: async ({
         sectionNumberOrTitle,
         documentId,
@@ -138,24 +127,21 @@ export function createContractTools(documentIds: string[], customDbPath?: string
           return { found: false, message: `Error retrieving section: ${error.message}` };
         }
       },
-    },
+    }),
 
-    check_coverage: {
+    check_coverage: tool({
       description: 'Check how much of the contract has been inspected to verify whether exhaustive statements are safe.',
-      parameters: {
-        type: 'object',
-        properties: {
-          documentId: {
-            type: 'string',
-            description: 'The document ID to evaluate.',
-          },
-          inspectedSections: {
-            type: 'array',
-            items: { type: 'string' },
-            description: 'List of section numbers that have been read/inspected.',
-          },
-        },
-      },
+      parameters: z.object({
+        documentId: z
+          .string()
+          .optional()
+          .describe('The document ID to evaluate.'),
+        inspectedSections: z
+          .array(z.string())
+          .optional()
+          .default([])
+          .describe('List of section numbers that have been read/inspected.'),
+      }),
       execute: async ({
         documentId,
         inspectedSections = [],
@@ -184,6 +170,6 @@ export function createContractTools(documentIds: string[], customDbPath?: string
             : 'All sections inspected.',
         };
       },
-    },
+    }),
   };
 }
