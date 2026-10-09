@@ -44,7 +44,9 @@ export interface ChatMessageRecord {
   createdAt?: string;
 }
 
-const defaultDbPath = process.env.DATABASE_PATH || path.resolve(process.cwd(), 'data/contracts.db');
+const defaultDbPath =
+  process.env.DATABASE_PATH ||
+  (process.env.VERCEL ? '/tmp/contracts.db' : path.resolve(process.cwd(), 'data/contracts.db'));
 const dbCache = new Map<string, Database.Database>();
 
 export function getDb(customPath?: string): Database.Database {
