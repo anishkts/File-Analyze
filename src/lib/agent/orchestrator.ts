@@ -1,7 +1,7 @@
 import { createContractTools } from './tools';
 import { AgentResearchStep, AgentResearchResult } from './types';
 import { extractQuotesFromText, verifyAllQuotes } from '../verification/verifier';
-import { getDocument, getDocumentSections } from '../db';
+import { getDocument, getDocumentSections, getDocumentPages } from '../db';
 import { createOpenAI } from '@ai-sdk/openai';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 
@@ -112,7 +112,8 @@ export async function runOfflineSimulatedResearch(
   for (const q of quotesToVerify) {
     const doc = getDocument(q.docId);
     if (doc) {
-      const v = verifyAllQuotes(doc.extractedText, [q.text], [], q.docId);
+      const docPages = getDocumentPages(q.docId);
+      const v = verifyAllQuotes(doc.extractedText, [q.text], docPages, q.docId);
       verifiedQuotes.push(...v);
     }
   }

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { parseDocument } from '@/lib/parsers';
-import { insertDocument, insertSections } from '@/lib/db';
+import { insertDocument, insertSections, insertPages } from '@/lib/db';
 import path from 'path';
 import fs from 'fs';
 import crypto from 'crypto';
@@ -69,6 +69,18 @@ export async function POST(req: NextRequest) {
       isScanned: 0,
       htmlContent: parsed.htmlContent,
     });
+
+    if (parsed.pages && parsed.pages.length > 0) {
+      insertPages(
+        parsed.pages.map((p) => ({
+          id: `${documentId}-p-${p.pageNumber}`,
+          documentId,
+          pageNumber: p.pageNumber,
+          startChar: p.startChar,
+          endChar: p.endChar,
+        }))
+      );
+    }
 
     if (parsed.sections && parsed.sections.length > 0) {
       const dbSections = parsed.sections.map((s, idx) => ({

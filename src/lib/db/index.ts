@@ -26,6 +26,14 @@ export interface SectionRecord {
   pageNumber: number;
 }
 
+export interface PageRecord {
+  id: string;
+  documentId: string;
+  pageNumber: number;
+  startChar: number;
+  endChar: number;
+}
+
 export interface ChatSessionRecord {
   id: string;
   documentIds: string[];
@@ -99,6 +107,16 @@ export function getDb(customPath?: string): Database.Database {
 
       CREATE INDEX IF NOT EXISTS idx_sections_doc_id ON document_sections(document_id);
       CREATE INDEX IF NOT EXISTS idx_sections_page ON document_sections(document_id, page_number);
+
+      CREATE TABLE IF NOT EXISTS document_pages (
+        id TEXT PRIMARY KEY,
+        document_id TEXT NOT NULL REFERENCES documents(id) ON DELETE CASCADE,
+        page_number INTEGER NOT NULL,
+        start_char INTEGER NOT NULL,
+        end_char INTEGER NOT NULL
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_pages_doc ON document_pages(document_id);
 
       CREATE VIRTUAL TABLE IF NOT EXISTS document_fts USING fts5(
         document_id UNINDEXED,
@@ -275,6 +293,96 @@ export function searchSectionsFTS(documentId: string, query: string, customPath?
     endChar: r.end_char,
     pageNumber: r.page_number,
   }));
+}
+
+export function insertPages(
+  pages: Array<{ id: string; documentId: string; pageNumber: number; startChar: number; endChar: number }>,
+  customPath?: string
+): void {
+  const db = getDb(customPath);
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS document_pages (
+      id TEXT PRIMARY KEY,
+      document_id TEXT NOT NULL REFERENCES documents(id) ON DELETE CASCADE,
+      page_number INTEGER NOT NULL,
+      start_char INTEGER NOT NULL,
+      end_char INTEGER NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS idx_pages_doc ON document_pages(document_id);
+  `);
+  const stmt = db.prepare(`
+    INSERT OR REPLACE INTO document_pages (id, document_id, page_number, start_char, end_char)
+    VALUES (?, ?, ?, ?, ?)
+  `);
+  const tx = db.transaction((items) => {
+    for (const item of items) {
+      stmt.run(item.id, item.documentId, item.pageNumber, item.startChar, item.endChar);
+    }
+  });
+  tx(pages);
+}
+
+export function getDocumentPages(
+  documentId: string,
+  customPath?: string
+): Array<{ pageNumber: number; text: string; startChar: number; endChar: number }> {
+  const db = getDb(customPath);
+
+  // 1. Check if document_pages table exists and has entries
+  try {
+    const pageRows = db
+      .prepare('SELECT page_number, start_char, end_char FROM document_pages WHERE document_id = ? ORDER BY page_number ASC')
+      .all(documentId) as any[];
+    if (pageRows && pageRows.length > 0) {
+      return pageRows.map((r) => ({
+        pageNumber: r.page_number,
+        text: '',
+        startChar: r.start_char,
+        endChar: r.end_char,
+      }));
+    }
+  } catch {
+    // document_pages table may not exist yet in legacy DBs, fall through
+  }
+
+  // 2. Derive pages from document_sections
+  const sectionRows = db
+    .prepare(`
+      SELECT page_number, MIN(start_char) as min_start, MAX(end_char) as max_end
+      FROM document_sections
+      WHERE document_id = ?
+      GROUP BY page_number
+      ORDER BY page_number ASC
+    `)
+    .all(documentId) as any[];
+
+  if (sectionRows && sectionRows.length > 0) {
+    return sectionRows.map((r) => ({
+      pageNumber: r.page_number,
+      text: '',
+      startChar: r.min_start,
+      endChar: r.max_end,
+    }));
+  }
+
+  // 3. Fallback: Proportional page ranges based on document length and page_count
+  const doc = getDocument(documentId, customPath);
+  if (doc && doc.pageCount > 0 && doc.extractedText) {
+    const textLen = doc.extractedText.length;
+    const charsPerPage = Math.ceil(textLen / doc.pageCount);
+    const pages: Array<{ pageNumber: number; text: string; startChar: number; endChar: number }> = [];
+    for (let p = 1; p <= doc.pageCount; p++) {
+      pages.push({
+        pageNumber: p,
+        text: '',
+        startChar: (p - 1) * charsPerPage,
+        endChar: Math.min(textLen, p * charsPerPage),
+      });
+    }
+    return pages;
+  }
+
+  return [];
 }
 
 export function createChatSession(

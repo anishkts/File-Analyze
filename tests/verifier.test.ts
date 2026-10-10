@@ -38,6 +38,26 @@ The Contractor warrants that services will be performed with reasonable care and
     expect(result.pageNumber).toBe(1); // origin page
   });
 
+  it('verifies quote on subsequent pages and returns correct page number', () => {
+    const quote = "The Contractor warrants that services will be performed with reasonable care";
+    const result = verifyQuote(docText, quote, pages);
+    expect(result.verified).toBe(true);
+    expect(result.pageNumber).toBe(2);
+  });
+
+  it('correctly maps quote near page gap to nearest page rather than defaulting to page 1', () => {
+    const multiPages = [
+      { pageNumber: 1, text: 'Page one text', startChar: 0, endChar: 50 },
+      { pageNumber: 2, text: 'Page two text', startChar: 60, endChar: 120 },
+      { pageNumber: 3, text: 'Page three text', startChar: 140, endChar: 200 },
+    ];
+    // Offset 135 is in gap right before Page 3 (140..200)
+    const text = 'A'.repeat(135) + 'Page three text is here';
+    const result = verifyQuote(text, 'Page three text', multiPages);
+    expect(result.verified).toBe(true);
+    expect(result.pageNumber).toBe(3);
+  });
+
   it('rejects hallucinated or paraphrased quotes', () => {
     const fakeQuote = "The supplier agrees to unlimited liability for any damages whatsoever.";
     const result = verifyQuote(docText, fakeQuote, pages);

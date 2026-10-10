@@ -27,6 +27,16 @@ CREATE TABLE IF NOT EXISTS document_sections (
 CREATE INDEX IF NOT EXISTS idx_sections_doc_id ON document_sections(document_id);
 CREATE INDEX IF NOT EXISTS idx_sections_page ON document_sections(document_id, page_number);
 
+CREATE TABLE IF NOT EXISTS document_pages (
+  id TEXT PRIMARY KEY,
+  document_id TEXT NOT NULL REFERENCES documents(id) ON DELETE CASCADE,
+  page_number INTEGER NOT NULL,
+  start_char INTEGER NOT NULL,
+  end_char INTEGER NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_pages_doc ON document_pages(document_id);
+
 -- Full-text search virtual table (FTS5)
 CREATE VIRTUAL TABLE IF NOT EXISTS document_fts USING fts5(
   document_id UNINDEXED,

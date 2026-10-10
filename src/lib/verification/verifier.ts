@@ -178,12 +178,28 @@ export function verifyQuote(
 
 function findPage(charIndex: number, pages: VerificationPage[]): number {
   if (!pages || pages.length === 0) return 1;
+
+  // 1. Direct hit inside page bounds
   for (const p of pages) {
     if (charIndex >= p.startChar && charIndex <= p.endChar) {
       return p.pageNumber;
     }
   }
-  return pages[0].pageNumber;
+
+  // 2. In-between pages or boundary gap - find page with minimum distance
+  let closestPage = pages[0].pageNumber;
+  let minDistance = Infinity;
+  for (const p of pages) {
+    const dist = Math.min(
+      Math.abs(charIndex - p.startChar),
+      Math.abs(charIndex - p.endChar)
+    );
+    if (dist < minDistance) {
+      minDistance = dist;
+      closestPage = p.pageNumber;
+    }
+  }
+  return closestPage;
 }
 
 export function extractQuotesFromText(text: string): string[] {

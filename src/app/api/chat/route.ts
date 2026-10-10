@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import {
   getDocument,
+  getDocumentPages,
   createChatSession,
   getChatSession,
   insertChatMessage,
@@ -224,7 +225,8 @@ export async function POST(req: NextRequest) {
           for (const q of rawQuotes) {
             let matched = false;
             for (const doc of docs) {
-              const res = verifyQuote(doc.extractedText, q, [], doc.id);
+              const docPages = getDocumentPages(doc.id);
+              const res = verifyQuote(doc.extractedText, q, docPages, doc.id);
               if (res.verified) {
                 verifiedQuotes.push({
                   ...res,
