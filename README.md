@@ -9,6 +9,14 @@
 
 ---
 
+## 🚀 Live Demo & Submission Deliverables
+- **Live Deployed Application:** [https://file-analyze-production.up.railway.app](https://file-analyze-production.up.railway.app)
+- **GitHub Repository:** [https://github.com/anishkts/File-Analyze](https://github.com/anishkts/File-Analyze)
+- **Technical Note:** [`docs/submission/technical-note.md`](./docs/submission/technical-note.md)
+- **Demo Video Script:** [`docs/submission/demo-video-script.md`](./docs/submission/demo-video-script.md)
+
+---
+
 ## 🌟 Key Features & Requirements Compliance
 
 ### Part A: Core Features
