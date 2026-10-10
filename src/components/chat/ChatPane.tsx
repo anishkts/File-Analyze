@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChatPaneProps, MessageItem, ChatQuote, ResearchStep } from './types';
 import { ChatMessage } from './ChatMessage';
-import { Send, Square, Sparkles, MessageSquare, AlertCircle } from 'lucide-react';
+import { Send, Square, Sparkles, MessageSquare, AlertCircle, FileText } from 'lucide-react';
 
 export function ChatPane({ selectedDocumentIds, documents, onQuoteClick }: ChatPaneProps) {
   const [messages, setMessages] = useState<MessageItem[]>([]);
@@ -170,6 +170,130 @@ export function ChatPane({ selectedDocumentIds, documents, onQuoteClick }: ChatP
 
   const selectedDocsInfo = documents.filter((d) => selectedDocumentIds.includes(d.id));
 
+  // Build document-aware context info & suggestions
+  const contextInfo = React.useMemo(() => {
+    if (selectedDocsInfo.length === 0) {
+      return {
+        title: 'Select a Contract to Begin',
+        subtitle: 'Pick one or more contracts from the library to enable verified AI research.',
+        badge: null,
+        suggestions: [
+          'What are the key liability caps across uploaded contracts?',
+          'Which contract has the strictest indemnification clause?',
+          'Summarize the primary obligations in these agreements.',
+          'What are the standard termination notice periods?',
+        ],
+      };
+    }
+
+    if (selectedDocsInfo.length > 1) {
+      const names = selectedDocsInfo.map((d) => d.filename);
+      const namesPreview =
+        names.length <= 2 ? names.join(' & ') : `${names[0]}, ${names[1]} +${names.length - 2} more`;
+
+      return {
+        title: `Cross-Document Analysis (${selectedDocsInfo.length} Contracts)`,
+        subtitle: `Querying across ${namesPreview}. Ask comparative questions or contrast clauses across these agreements.`,
+        badge: `${selectedDocsInfo.length} Contracts Active`,
+        suggestions: [
+          'Compare the limitation of liability caps between both contracts',
+          'Which contract has more favorable termination terms?',
+          'Are there conflicting governing law or jurisdiction clauses?',
+          'Compare the indemnification obligations across both contracts',
+        ],
+      };
+    }
+
+    const doc = selectedDocsInfo[0];
+    const lowerName = doc.filename.toLowerCase();
+
+    // NDA / Confidentiality detection
+    if (lowerName.includes('nda') || lowerName.includes('confidential') || lowerName.includes('disclosure')) {
+      return {
+        title: `Ask About ${doc.filename}`,
+        subtitle: 'Every answer is researched directly from this NDA and verified with exact citations.',
+        badge: doc.filename,
+        suggestions: [
+          'What is the duration of the confidentiality obligations?',
+          'What constitutes Confidential Information in this agreement?',
+          'What are the standard exclusions from confidentiality?',
+          'What are the return or destruction requirements upon termination?',
+        ],
+      };
+    }
+
+    // Employment / Consulting / Contractor detection
+    if (
+      lowerName.includes('employ') ||
+      lowerName.includes('consult') ||
+      lowerName.includes('contractor') ||
+      lowerName.includes('offer') ||
+      lowerName.includes('severance')
+    ) {
+      return {
+        title: `Ask About ${doc.filename}`,
+        subtitle: 'Every answer is researched directly from this employment/services agreement and verified with exact citations.',
+        badge: doc.filename,
+        suggestions: [
+          'What are the termination conditions and notice periods?',
+          'Is there a non-compete or non-solicitation clause?',
+          'What are the compensation and payment terms?',
+          'Who owns the intellectual property and work product created?',
+        ],
+      };
+    }
+
+    // SaaS / Software / Vendor / License detection
+    if (
+      lowerName.includes('saas') ||
+      lowerName.includes('software') ||
+      lowerName.includes('license') ||
+      lowerName.includes('cloud') ||
+      lowerName.includes('vendor') ||
+      lowerName.includes('subscription')
+    ) {
+      return {
+        title: `Ask About ${doc.filename}`,
+        subtitle: 'Every answer is researched directly from this software agreement and verified with exact citations.',
+        badge: doc.filename,
+        suggestions: [
+          'What is the limitation of liability cap and exclusions?',
+          'What are the service level commitments and warranties?',
+          'What data security and privacy obligations exist?',
+          'What are the renewal and price increase terms?',
+        ],
+      };
+    }
+
+    // Lease / Real Estate
+    if (lowerName.includes('lease') || lowerName.includes('rent') || lowerName.includes('tenant')) {
+      return {
+        title: `Ask About ${doc.filename}`,
+        subtitle: 'Every answer is researched directly from this lease agreement and verified with exact citations.',
+        badge: doc.filename,
+        suggestions: [
+          'What is the term duration and renewal notice period?',
+          'What are the maintenance and repair obligations?',
+          'What are the deposit and default remedies?',
+          'What are the subleasing and assignment restrictions?',
+        ],
+      };
+    }
+
+    // General Commercial Contract
+    return {
+      title: `Ask About ${doc.filename}`,
+      subtitle: 'Every answer will be researched using autonomous agent tools and verified with exact quotes from the source text.',
+      badge: doc.filename,
+      suggestions: [
+        'What is the limitation of liability cap?',
+        'Under what conditions can either party terminate?',
+        'What law and jurisdiction governs this agreement?',
+        'Is there an indemnification provision?',
+      ],
+    };
+  }, [selectedDocsInfo]);
+
   return (
     <div className="flex flex-col h-full bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
       {/* Header bar */}
@@ -195,19 +319,26 @@ export function ChatPane({ selectedDocumentIds, documents, onQuoteClick }: ChatP
       >
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center p-6 text-slate-400">
-            <Sparkles className="w-10 h-10 mb-3 text-blue-600/70" />
-            <h3 className="text-sm font-semibold text-slate-800">Ask Anything About Your Contracts</h3>
-            <p className="text-xs text-slate-500 max-w-sm mt-1">
-              Every answer will be researched using autonomous agent tools and verified with exact
-              quotes from the source text.
+            <div className="w-10 h-10 rounded-2xl bg-blue-50 border border-blue-200/60 flex items-center justify-center mb-3 shadow-xs">
+              <Sparkles className="w-5 h-5 text-blue-600" />
+            </div>
+
+            {contextInfo.badge && (
+              <div className="mb-2 inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-[11px] font-medium text-slate-600 max-w-xs truncate shadow-2xs">
+                <FileText className="w-3 h-3 text-blue-600 flex-shrink-0" />
+                <span className="truncate">{contextInfo.badge}</span>
+              </div>
+            )}
+
+            <h3 className="text-sm font-semibold text-slate-900 max-w-md">
+              {contextInfo.title}
+            </h3>
+            <p className="text-xs text-slate-500 max-w-sm mt-1 leading-relaxed">
+              {contextInfo.subtitle}
             </p>
+
             <div className="mt-4 flex flex-wrap gap-2 justify-center max-w-md">
-              {[
-                'What is the limitation of liability cap?',
-                'Under what conditions can either party terminate?',
-                'What law and jurisdiction governs this agreement?',
-                'Is there an indemnification provision?',
-              ].map((suggestion, idx) => (
+              {contextInfo.suggestions.map((suggestion, idx) => (
                 <button
                   key={idx}
                   type="button"
