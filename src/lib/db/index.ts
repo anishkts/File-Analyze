@@ -52,13 +52,15 @@ export interface ChatMessageRecord {
   createdAt?: string;
 }
 
-const defaultDbPath =
-  process.env.DATABASE_PATH ||
-  (process.env.VERCEL ? '/tmp/contracts.db' : path.resolve(process.cwd(), 'data/contracts.db'));
 const dbCache = new Map<string, Database.Database>();
 
 export function getDb(customPath?: string): Database.Database {
-  const dbPath = customPath || defaultDbPath;
+  const rawPath =
+    customPath ||
+    process.env.DATABASE_PATH ||
+    (process.env.VERCEL ? '/tmp/contracts.db' : 'data/contracts.db');
+  const dbPath = path.isAbsolute(rawPath) ? rawPath : path.resolve(process.cwd(), rawPath);
+
   if (dbCache.has(dbPath)) {
     return dbCache.get(dbPath)!;
   }
@@ -70,7 +72,13 @@ export function getDb(customPath?: string): Database.Database {
   }
 
   const db = new Database(dbPath);
-  db.pragma('journal_mode = WAL');
+  try {
+    db.pragma('journal_mode = WAL');
+  } catch {
+    try {
+      db.pragma('journal_mode = DELETE');
+    } catch {}
+  }
   db.pragma('foreign_keys = ON');
 
   // Initialize schema

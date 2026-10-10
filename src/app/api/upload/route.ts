@@ -47,9 +47,10 @@ export async function POST(req: NextRequest) {
     }
 
     // 3. Save physical file to disk
-    const uploadsDir =
+    const rawUploads =
       process.env.UPLOADS_DIR ||
-      (process.env.VERCEL ? '/tmp/uploads' : path.resolve(process.cwd(), 'data/uploads'));
+      (process.env.VERCEL ? '/tmp/uploads' : 'data/uploads');
+    const uploadsDir = path.isAbsolute(rawUploads) ? rawUploads : path.resolve(process.cwd(), rawUploads);
     if (!fs.existsSync(uploadsDir)) {
       fs.mkdirSync(uploadsDir, { recursive: true });
     }
