@@ -65,7 +65,7 @@ export async function runOfflineSimulatedResearch(
     statusText: 'Inspecting document outline and table of contents...',
     timestamp: new Date().toISOString(),
   });
-  const clauseList = await tools.list_clauses.execute({ documentId: documentIds[0] });
+  const clauseList = await (tools.list_clauses.execute as any)({ documentId: documentIds[0] });
 
   onStatusUpdate?.(`Searching for terms matching "${query}"...`);
   steps.push({
@@ -75,7 +75,7 @@ export async function runOfflineSimulatedResearch(
     statusText: `Searching clauses matching "${query}"...`,
     timestamp: new Date().toISOString(),
   });
-  const searchResults = await tools.search_document.execute({ query });
+  const searchResults = await (tools.search_document.execute as any)({ query });
 
   let answerText = '';
   const quotesToVerify: Array<{ text: string; docId: string }> = [];
@@ -93,7 +93,7 @@ export async function runOfflineSimulatedResearch(
       timestamp: new Date().toISOString(),
     });
 
-    const fullSec = await tools.get_section.execute({
+    const fullSec = await (tools.get_section.execute as any)({
       sectionNumberOrTitle: sectionIdentifier,
       documentId: bestMatch.documentId,
     });
