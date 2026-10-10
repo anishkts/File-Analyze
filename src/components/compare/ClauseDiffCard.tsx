@@ -15,28 +15,28 @@ export function ClauseDiffCard({ diff }: ClauseDiffCardProps) {
     switch (diff.status) {
       case 'modified':
         return (
-          <span className="flex items-center space-x-1 bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded text-[10px] font-semibold uppercase">
+          <span className="flex items-center space-x-1 bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded text-[10px] font-semibold uppercase">
             <AlertCircle className="w-3 h-3" />
             <span>Modified</span>
           </span>
         );
       case 'added':
         return (
-          <span className="flex items-center space-x-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded text-[10px] font-semibold uppercase">
+          <span className="flex items-center space-x-1 bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded text-[10px] font-semibold uppercase">
             <PlusCircle className="w-3 h-3" />
             <span>Added</span>
           </span>
         );
       case 'deleted':
         return (
-          <span className="flex items-center space-x-1 bg-rose-500/10 text-rose-400 border border-rose-500/20 px-2 py-0.5 rounded text-[10px] font-semibold uppercase">
+          <span className="flex items-center space-x-1 bg-rose-50 text-rose-700 border border-rose-200 px-2 py-0.5 rounded text-[10px] font-semibold uppercase">
             <MinusCircle className="w-3 h-3" />
             <span>Deleted</span>
           </span>
         );
       default:
         return (
-          <span className="flex items-center space-x-1 bg-slate-800 text-slate-400 px-2 py-0.5 rounded text-[10px]">
+          <span className="flex items-center space-x-1 bg-slate-100 text-slate-600 border border-slate-200 px-2 py-0.5 rounded text-[10px]">
             <CheckCircle className="w-3 h-3" />
             <span>Unchanged</span>
           </span>
@@ -51,19 +51,19 @@ export function ClauseDiffCard({ diff }: ClauseDiffCardProps) {
     switch (level) {
       case 'high':
         return (
-          <span className="bg-rose-500/15 text-rose-400 border border-rose-500/30 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">
+          <span className="bg-rose-50 text-rose-700 border border-rose-200 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">
             High Significance
           </span>
         );
       case 'medium':
         return (
-          <span className="bg-amber-500/15 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">
+          <span className="bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">
             Medium Significance
           </span>
         );
       default:
         return (
-          <span className="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2 py-0.5 rounded text-[10px]">
+          <span className="bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded text-[10px]">
             Low / Stylistic
           </span>
         );
@@ -71,11 +71,11 @@ export function ClauseDiffCard({ diff }: ClauseDiffCardProps) {
   };
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-sm hover:border-slate-700 transition">
+    <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs hover:border-slate-300 transition">
       {/* Header */}
       <div
         onClick={() => setExpanded(!expanded)}
-        className="flex items-center justify-between p-4 cursor-pointer hover:bg-slate-850/50 transition"
+        className="flex items-center justify-between p-4 cursor-pointer hover:bg-slate-50 transition"
       >
         <div className="flex items-center space-x-3">
           {expanded ? (
@@ -85,13 +85,13 @@ export function ClauseDiffCard({ diff }: ClauseDiffCardProps) {
           )}
           <div>
             <div className="flex items-center space-x-2">
-              <span className="text-xs font-mono font-semibold text-blue-400">
+              <span className="text-xs font-mono font-semibold text-blue-600">
                 {diff.sectionNumber}
               </span>
-              <span className="text-sm font-semibold text-slate-200">{diff.title}</span>
+              <span className="text-sm font-semibold text-slate-800">{diff.title}</span>
             </div>
             {diff.significance && (
-              <p className="text-xs text-slate-400 mt-1 line-clamp-1">
+              <p className="text-xs text-slate-500 mt-1 line-clamp-1">
                 {diff.significance.summary}
               </p>
             )}
@@ -106,10 +106,10 @@ export function ClauseDiffCard({ diff }: ClauseDiffCardProps) {
 
       {/* Expanded Diff Details */}
       {expanded && (
-        <div className="p-4 pt-0 border-t border-slate-800/80 bg-slate-950/40 space-y-3">
+        <div className="p-4 pt-0 border-t border-slate-200 bg-slate-50/50 space-y-3">
           {diff.significance && (
-            <div className="p-3 bg-slate-900/90 border border-slate-800 rounded-lg text-xs text-slate-300">
-              <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 block mb-1">
+            <div className="p-3 bg-white border border-slate-200 rounded-lg text-xs text-slate-700 shadow-xs">
+              <span className="text-[10px] uppercase font-bold tracking-wider text-slate-500 block mb-1">
                 Substantive Legal Analysis:
               </span>
               {diff.significance.summary}
@@ -119,21 +119,21 @@ export function ClauseDiffCard({ diff }: ClauseDiffCardProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
             {/* Version A */}
             <div className="flex flex-col">
-              <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+              <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
                 Original Version (A)
               </span>
-              <div className="flex-1 p-3 bg-slate-900/70 border border-rose-500/20 rounded-lg text-xs text-slate-300 whitespace-pre-wrap font-sans">
-                {diff.contentA || <span className="text-slate-500 italic">Not present in Version A</span>}
+              <div className="flex-1 p-3 bg-white border border-rose-200 rounded-lg text-xs text-slate-800 whitespace-pre-wrap font-sans shadow-xs">
+                {diff.contentA || <span className="text-slate-400 italic">Not present in Version A</span>}
               </div>
             </div>
 
             {/* Version B */}
             <div className="flex flex-col">
-              <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+              <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
                 Subsequent Version (B)
               </span>
-              <div className="flex-1 p-3 bg-slate-900/70 border border-emerald-500/20 rounded-lg text-xs text-slate-300 whitespace-pre-wrap font-sans">
-                {diff.contentB || <span className="text-slate-500 italic">Deleted in Version B</span>}
+              <div className="flex-1 p-3 bg-white border border-emerald-200 rounded-lg text-xs text-slate-800 whitespace-pre-wrap font-sans shadow-xs">
+                {diff.contentB || <span className="text-slate-400 italic">Deleted in Version B</span>}
               </div>
             </div>
           </div>

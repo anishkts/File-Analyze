@@ -52,33 +52,33 @@ export function DocumentLibrary({
   };
 
   return (
-    <div className="flex flex-col h-full bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-2xl p-6 space-y-6">
+    <div className="flex flex-col h-full bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm p-6 space-y-6">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
-          <h2 className="text-base font-semibold text-slate-100 flex items-center space-x-2">
-            <Layers className="w-5 h-5 text-blue-400" />
+          <h2 className="text-base font-semibold text-slate-900 flex items-center space-x-2">
+            <Layers className="w-5 h-5 text-blue-600" />
             <span>Contract Library</span>
           </h2>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-500 mt-0.5">
             Manage your uploaded contracts. Select multiple contracts to enable cross-document Q&A.
           </p>
         </div>
 
         <div className="flex items-center space-x-2">
           {documents.length > 0 && (
-            <div className="flex items-center space-x-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs">
+            <div className="flex items-center space-x-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs">
               <button
                 type="button"
                 onClick={onSelectAll}
-                className="px-2.5 py-1 hover:bg-slate-800 rounded text-slate-300 transition"
+                className="px-2.5 py-1 hover:bg-white rounded text-slate-700 transition"
               >
                 Select All
               </button>
               <button
                 type="button"
                 onClick={onClearSelection}
-                className="px-2.5 py-1 hover:bg-slate-800 rounded text-slate-400 transition"
+                className="px-2.5 py-1 hover:bg-white rounded text-slate-600 transition"
               >
                 Clear
               </button>
@@ -98,12 +98,12 @@ export function DocumentLibrary({
 
       {/* Selected Indicator */}
       {selectedDocumentIds.length > 0 && (
-        <div className="flex items-center justify-between p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl text-xs text-blue-300">
+        <div className="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-700">
           <span>
             <strong>{selectedDocumentIds.length}</strong> contract
             {selectedDocumentIds.length > 1 ? 's' : ''} selected for cross-document query
           </span>
-          <span className="text-[11px] text-blue-400/80 font-mono">Multi-Doc Mode Active</span>
+          <span className="text-[11px] text-blue-600 font-mono">Multi-Doc Mode Active</span>
         </div>
       )}
 
@@ -111,8 +111,8 @@ export function DocumentLibrary({
       <div className="flex-1 overflow-y-auto space-y-2.5">
         {documents.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-slate-500 text-center">
-            <FileText className="w-12 h-12 mb-3 stroke-[1.5] text-slate-600" />
-            <h3 className="text-sm font-semibold text-slate-400">Library is Empty</h3>
+            <FileText className="w-12 h-12 mb-3 stroke-[1.5] text-slate-400" />
+            <h3 className="text-sm font-semibold text-slate-700">Library is Empty</h3>
             <p className="text-xs text-slate-500 max-w-sm mt-1">
               Upload PDF or DOCX contracts to begin analyzing clauses and asking verified questions.
             </p>
@@ -127,8 +127,8 @@ export function DocumentLibrary({
                 onClick={() => onOpenDocument(doc.id)}
                 className={`flex items-center justify-between p-4 rounded-xl border cursor-pointer transition ${
                   isSelected
-                    ? 'bg-slate-850/90 border-blue-500/50 shadow-md'
-                    : 'bg-slate-950/60 border-slate-800/80 hover:border-slate-700 hover:bg-slate-900/60'
+                    ? 'bg-blue-50/70 border-blue-300 shadow-xs'
+                    : 'bg-slate-50/60 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
                 }`}
               >
                 <div className="flex items-center space-x-3.5 flex-1 min-w-0">
@@ -139,29 +139,29 @@ export function DocumentLibrary({
                       e.stopPropagation();
                       onToggleSelect(doc.id);
                     }}
-                    className="text-slate-400 hover:text-blue-400 transition"
+                    className="text-slate-400 hover:text-blue-600 transition"
                   >
                     {isSelected ? (
-                      <CheckSquare className="w-5 h-5 text-blue-400" />
+                      <CheckSquare className="w-5 h-5 text-blue-600" />
                     ) : (
                       <Square className="w-5 h-5" />
                     )}
                   </button>
 
-                  <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300">
-                    <FileText className="w-5 h-5 text-blue-400" />
+                  <div className="p-2.5 rounded-lg bg-white border border-slate-200 text-slate-600 shadow-xs">
+                    <FileText className="w-5 h-5 text-blue-600" />
                   </div>
 
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center space-x-2">
-                      <span className="text-sm font-semibold text-slate-200 truncate">
+                      <span className="text-sm font-semibold text-slate-800 truncate">
                         {doc.filename}
                       </span>
                       <span
                         className={`text-[10px] font-semibold uppercase px-2 py-0.2 rounded border ${
                           doc.fileType === 'pdf'
-                            ? 'bg-blue-500/10 text-blue-400 border-blue-500/20'
-                            : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                            ? 'bg-blue-50 text-blue-700 border-blue-200'
+                            : 'bg-emerald-50 text-emerald-700 border-emerald-200'
                         }`}
                       >
                         {doc.fileType}
@@ -193,7 +193,7 @@ export function DocumentLibrary({
                       e.stopPropagation();
                       onOpenDocument(doc.id);
                     }}
-                    className="p-2 hover:bg-slate-800 text-slate-400 hover:text-slate-200 rounded-lg text-xs flex items-center space-x-1 transition"
+                    className="p-2 hover:bg-slate-200 text-slate-500 hover:text-slate-800 rounded-lg text-xs flex items-center space-x-1 transition"
                     title="View Document"
                   >
                     <Eye className="w-4 h-4" />
@@ -203,7 +203,7 @@ export function DocumentLibrary({
                     type="button"
                     onClick={(e) => handleDelete(doc.id, e)}
                     disabled={deletingId === doc.id}
-                    className="p-2 hover:bg-rose-500/10 text-slate-500 hover:text-rose-400 rounded-lg text-xs transition"
+                    className="p-2 hover:bg-rose-50 text-slate-400 hover:text-rose-600 rounded-lg text-xs transition"
                     title="Delete Contract"
                   >
                     <Trash2 className="w-4 h-4" />

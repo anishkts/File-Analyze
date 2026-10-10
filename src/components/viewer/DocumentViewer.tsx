@@ -50,9 +50,9 @@ export function DocumentViewer({
 
   if (!documentId) {
     return (
-      <div className="flex flex-col items-center justify-center h-full bg-slate-900/40 border border-slate-800/80 rounded-xl p-8 text-center text-slate-500">
-        <FileSearch className="w-12 h-12 mb-3 stroke-[1.5] text-slate-600" />
-        <h3 className="text-sm font-semibold text-slate-400">No Document Selected</h3>
+      <div className="flex flex-col items-center justify-center h-full bg-white border border-slate-200 rounded-xl p-8 text-center text-slate-500 shadow-xs">
+        <FileSearch className="w-12 h-12 mb-3 stroke-[1.5] text-slate-400" />
+        <h3 className="text-sm font-semibold text-slate-700">No Document Selected</h3>
         <p className="text-xs text-slate-500 max-w-xs mt-1">
           Select or upload a contract from the library to view its text and highlighted citations.
         </p>
@@ -62,16 +62,16 @@ export function DocumentViewer({
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center h-full bg-slate-900/40 border border-slate-800/80 rounded-xl p-8 text-center">
+      <div className="flex flex-col items-center justify-center h-full bg-white border border-slate-200 rounded-xl p-8 text-center shadow-xs">
         <Loader2 className="w-8 h-8 animate-spin text-blue-500 mb-2" />
-        <p className="text-xs text-slate-400">Loading document...</p>
+        <p className="text-xs text-slate-500">Loading document...</p>
       </div>
     );
   }
 
   if (error || !docData) {
     return (
-      <div className="flex flex-col items-center justify-center h-full bg-slate-900/40 border border-slate-800/80 rounded-xl p-8 text-center text-rose-400">
+      <div className="flex flex-col items-center justify-center h-full bg-white border border-slate-200 rounded-xl p-8 text-center text-rose-600 shadow-xs">
         <p className="text-sm font-medium">{error || 'Unable to open document'}</p>
       </div>
     );

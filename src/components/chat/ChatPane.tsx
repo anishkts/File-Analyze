@@ -171,18 +171,18 @@ export function ChatPane({ selectedDocumentIds, documents, onQuoteClick }: ChatP
   const selectedDocsInfo = documents.filter((d) => selectedDocumentIds.includes(d.id));
 
   return (
-    <div className="flex flex-col h-full bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-2xl">
+    <div className="flex flex-col h-full bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
       {/* Header bar */}
-      <div className="flex items-center justify-between px-4 py-3 bg-slate-950/80 border-b border-slate-800">
+      <div className="flex items-center justify-between px-4 py-3 bg-slate-50 border-b border-slate-200">
         <div className="flex items-center space-x-2">
           <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-          <h2 className="text-xs font-semibold text-slate-200 uppercase tracking-wider">
+          <h2 className="text-xs font-semibold text-slate-700 uppercase tracking-wider">
             Contract Intelligence Chat
           </h2>
         </div>
 
-        <div className="flex items-center space-x-1.5 text-xs text-slate-400">
-          <span className="text-[11px] bg-slate-800/80 px-2 py-0.5 rounded border border-slate-700/60 font-mono">
+        <div className="flex items-center space-x-1.5 text-xs text-slate-500">
+          <span className="text-[11px] bg-white px-2 py-0.5 rounded border border-slate-200 font-mono shadow-xs text-slate-600">
             {selectedDocsInfo.length} {selectedDocsInfo.length === 1 ? 'doc' : 'docs'} active
           </span>
         </div>
@@ -191,13 +191,13 @@ export function ChatPane({ selectedDocumentIds, documents, onQuoteClick }: ChatP
       {/* Messages area */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto p-4 space-y-2 bg-slate-950/40 relative"
+        className="flex-1 overflow-y-auto p-4 space-y-2 bg-slate-50/50 relative"
       >
         {messages.length === 0 && (
-          <div className="flex flex-col items-center justify-center h-full text-center p-6 text-slate-500">
-            <Sparkles className="w-10 h-10 mb-3 text-blue-500/70" />
-            <h3 className="text-sm font-semibold text-slate-300">Ask Anything About Your Contracts</h3>
-            <p className="text-xs text-slate-400 max-w-sm mt-1">
+          <div className="flex flex-col items-center justify-center h-full text-center p-6 text-slate-400">
+            <Sparkles className="w-10 h-10 mb-3 text-blue-600/70" />
+            <h3 className="text-sm font-semibold text-slate-800">Ask Anything About Your Contracts</h3>
+            <p className="text-xs text-slate-500 max-w-sm mt-1">
               Every answer will be researched using autonomous agent tools and verified with exact
               quotes from the source text.
             </p>
@@ -212,7 +212,7 @@ export function ChatPane({ selectedDocumentIds, documents, onQuoteClick }: ChatP
                   key={idx}
                   type="button"
                   onClick={() => setInput(suggestion)}
-                  className="text-[11px] bg-slate-900 hover:bg-slate-850 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-slate-200 px-2.5 py-1.5 rounded-lg transition"
+                  className="text-[11px] bg-white hover:bg-slate-50 border border-slate-200 hover:border-slate-300 text-slate-600 hover:text-slate-900 px-2.5 py-1.5 rounded-lg shadow-xs transition"
                 >
                   &ldquo;{suggestion}&rdquo;
                 </button>
@@ -227,15 +227,15 @@ export function ChatPane({ selectedDocumentIds, documents, onQuoteClick }: ChatP
 
         {/* Live Status indicator */}
         {isStreaming && currentStatus && (
-          <div className="flex items-center space-x-2 text-xs text-blue-400 bg-blue-500/10 border border-blue-500/20 px-3 py-1.5 rounded-lg w-fit animate-pulse">
-            <Sparkles className="w-3.5 h-3.5 animate-spin" />
+          <div className="flex items-center space-x-2 text-xs text-blue-700 bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-lg w-fit animate-pulse font-medium">
+            <Sparkles className="w-3.5 h-3.5 animate-spin text-blue-600" />
             <span>{currentStatus}</span>
           </div>
         )}
       </div>
 
       {/* Input area */}
-      <div className="p-3 bg-slate-950/90 border-t border-slate-800">
+      <div className="p-3 bg-white border-t border-slate-200">
         <form onSubmit={handleSend} className="relative flex items-center">
           <input
             type="text"
@@ -247,7 +247,7 @@ export function ChatPane({ selectedDocumentIds, documents, onQuoteClick }: ChatP
                 ? 'Select a document from library to begin...'
                 : 'Ask a question (e.g. "What are the liability limits?")...'
             }
-            className="w-full bg-slate-900 border border-slate-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-slate-200 placeholder-slate-500 outline-none pr-24 transition"
+            className="w-full bg-slate-50 border border-slate-300 focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-500 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-slate-900 placeholder-slate-400 outline-none pr-24 transition"
           />
 
           <div className="absolute right-2 flex items-center space-x-1.5">

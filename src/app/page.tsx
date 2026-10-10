@@ -83,33 +83,33 @@ export default function Home() {
   };
 
   return (
-    <main className="flex flex-col h-screen w-screen overflow-hidden bg-slate-950 text-slate-100">
+    <main className="flex flex-col h-screen w-screen overflow-hidden bg-slate-50 text-slate-900">
       {/* Top Header & Navigation */}
-      <header className="flex items-center justify-between px-6 py-3 bg-slate-900/90 border-b border-slate-800 backdrop-blur z-20 flex-shrink-0">
+      <header className="flex items-center justify-between px-6 py-3 bg-white border-b border-slate-200 backdrop-blur z-20 flex-shrink-0 shadow-sm">
         <div className="flex items-center space-x-3">
-          <div className="p-2 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/20">
+          <div className="p-2 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/20">
             <Scale className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center space-x-2">
-              <h1 className="text-sm font-bold tracking-tight text-white">LexQuery</h1>
-              <span className="text-[10px] font-semibold uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.2 rounded-full">
+              <h1 className="text-sm font-bold tracking-tight text-slate-900">LexQuery</h1>
+              <span className="text-[10px] font-semibold uppercase bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.2 rounded-full">
                 Verified Quotes Active
               </span>
             </div>
-            <p className="text-[11px] text-slate-400">AI Legal Contract Intelligence & Citation Engine</p>
+            <p className="text-[11px] text-slate-500">AI Legal Contract Intelligence & Citation Engine</p>
           </div>
         </div>
 
         {/* View Mode Navigation Tabs */}
-        <div className="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 space-x-1">
+        <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 space-x-1">
           <button
             type="button"
             onClick={() => setActiveTab('workspace')}
             className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition ${
               activeTab === 'workspace'
                 ? 'bg-blue-600 text-white shadow'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
             }`}
           >
             <MessageSquare className="w-3.5 h-3.5" />
@@ -122,7 +122,7 @@ export default function Home() {
             className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition ${
               activeTab === 'compare'
                 ? 'bg-blue-600 text-white shadow'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
             }`}
           >
             <GitCompare className="w-3.5 h-3.5" />
@@ -135,7 +135,7 @@ export default function Home() {
             className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition ${
               activeTab === 'library'
                 ? 'bg-blue-600 text-white shadow'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
             }`}
           >
             <Layers className="w-3.5 h-3.5" />
@@ -146,9 +146,9 @@ export default function Home() {
         {/* Active Document Indicator */}
         <div className="flex items-center space-x-2 text-xs">
           {activeViewerDocId && (
-            <div className="flex items-center space-x-1.5 bg-slate-800/80 px-2.5 py-1 rounded-lg border border-slate-700/60 max-w-xs truncate">
-              <FileText className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" />
-              <span className="text-slate-300 truncate">
+            <div className="flex items-center space-x-1.5 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200 max-w-xs truncate shadow-sm">
+              <FileText className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" />
+              <span className="text-slate-700 truncate font-medium">
                 {documents.find((d) => d.id === activeViewerDocId)?.filename || 'Active Contract'}
               </span>
             </div>

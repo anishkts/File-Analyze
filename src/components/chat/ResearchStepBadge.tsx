@@ -29,39 +29,39 @@ export function ResearchStepBadge({ steps }: ResearchStepBadgeProps) {
   };
 
   return (
-    <div className="my-2.5 bg-slate-900/90 border border-slate-800 rounded-lg p-2.5 text-xs text-slate-300">
+    <div className="my-2.5 bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-700">
       <button
         type="button"
         onClick={() => setExpanded(!expanded)}
-        className="flex items-center justify-between w-full font-medium hover:text-white transition"
+        className="flex items-center justify-between w-full font-medium hover:text-slate-900 transition"
       >
         <div className="flex items-center space-x-2">
-          <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-          <span className="text-slate-300">
+          <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
+          <span className="text-slate-800 font-medium">
             Agentic Research Process ({steps.length} {steps.length === 1 ? 'step' : 'steps'})
           </span>
         </div>
         {expanded ? (
-          <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+          <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
         ) : (
-          <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+          <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
         )}
       </button>
 
       {expanded && (
-        <div className="mt-2.5 pt-2 border-t border-slate-800 space-y-2">
+        <div className="mt-2.5 pt-2 border-t border-slate-200 space-y-2">
           {steps.map((step, idx) => (
             <div
               key={idx}
-              className="flex items-start space-x-2 text-[11px] text-slate-400 bg-slate-950/60 p-2 rounded border border-slate-850"
+              className="flex items-start space-x-2 text-[11px] text-slate-600 bg-white p-2 rounded border border-slate-200 shadow-xs"
             >
               <div className="mt-0.5">{getToolIcon(step.toolName)}</div>
               <div className="flex-1">
                 <div className="flex items-center justify-between">
-                  <span className="font-mono text-slate-300 font-semibold">{step.toolName}</span>
+                  <span className="font-mono text-slate-800 font-semibold">{step.toolName}</span>
                   <span className="text-[10px] text-slate-500">Round {step.round || idx + 1}</span>
                 </div>
-                <p className="text-slate-400 mt-0.5">{step.statusText}</p>
+                <p className="text-slate-600 mt-0.5">{step.statusText}</p>
                 {step.args && (
                   <pre className="text-[10px] text-slate-500 font-mono mt-1 overflow-x-auto">
                     {JSON.stringify(step.args)}

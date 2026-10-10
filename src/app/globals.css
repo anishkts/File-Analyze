@@ -3,16 +3,16 @@
 @tailwind utilities;
 
 :root {
-  --background: #0b0f19;
-  --foreground: #f3f4f6;
-  --card: #111827;
-  --card-border: #1f2937;
-  --accent: #3b82f6;
-  --accent-hover: #2563eb;
-  --verified-border: #10b981;
-  --verified-bg: rgba(16, 185, 129, 0.12);
-  --unverified-border: #f59e0b;
-  --unverified-bg: rgba(245, 158, 11, 0.12);
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-border: #e2e8f0;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --verified-border: #059669;
+  --verified-bg: rgba(16, 185, 129, 0.08);
+  --unverified-border: #d97706;
+  --unverified-bg: rgba(245, 158, 11, 0.08);
 }
 
 body {
@@ -33,12 +33,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #374151;
+  background: #cbd5e1;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #4b5563;
+  background: #94a3b8;
 }
 
 /* Citation Pulse Highlight */

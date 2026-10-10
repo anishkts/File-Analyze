@@ -25,8 +25,8 @@ export function ChatMessage({ message, onQuoteClick }: ChatMessageProps) {
       <div
         className={`flex flex-col max-w-[85%] rounded-2xl px-4 py-3 ${
           isUser
-            ? 'bg-blue-600 text-white rounded-tr-none shadow-md shadow-blue-500/10'
-            : 'bg-slate-900 border border-slate-800 text-slate-200 rounded-tl-none shadow-md'
+            ? 'bg-blue-600 text-white rounded-tr-none shadow-sm'
+            : 'bg-white border border-slate-200 text-slate-800 rounded-tl-none shadow-xs'
         }`}
       >
         {/* Agentic research steps */}
@@ -41,8 +41,8 @@ export function ChatMessage({ message, onQuoteClick }: ChatMessageProps) {
 
         {/* Verified Quotes */}
         {!isUser && message.quotes && message.quotes.length > 0 && (
-          <div className="mt-3 pt-2.5 border-t border-slate-800/80 space-y-1.5">
-            <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
+          <div className="mt-3 pt-2.5 border-t border-slate-200 space-y-1.5">
+            <span className="text-[10px] uppercase font-bold tracking-wider text-slate-500">
               Verified Citations:
             </span>
             {message.quotes.map((quote, idx) => (
@@ -57,8 +57,8 @@ export function ChatMessage({ message, onQuoteClick }: ChatMessageProps) {
       </div>
 
       {isUser && (
-        <div className="w-7 h-7 rounded-lg bg-slate-700 flex items-center justify-center flex-shrink-0 shadow-sm">
-          <User className="w-4 h-4 text-slate-300" />
+        <div className="w-7 h-7 rounded-lg bg-slate-200 flex items-center justify-center flex-shrink-0 shadow-xs">
+          <User className="w-4 h-4 text-slate-700" />
         </div>
       )}
     </div>
