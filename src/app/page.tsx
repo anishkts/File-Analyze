@@ -24,17 +24,66 @@ export default function Home() {
   const [activeViewerDocId, setActiveViewerDocId] = useState<string | null>(null);
   const [activeHighlight, setActiveHighlight] = useState<HighlightTarget | null>(null);
 
+  const updateSelectedDocIds = (newIds: string[] | ((prev: string[]) => string[])) => {
+    setSelectedDocIds((prev) => {
+      const resolved = typeof newIds === 'function' ? newIds(prev) : newIds;
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem('lexquery_selected_doc_ids', JSON.stringify(resolved));
+        } catch (e) {}
+      }
+      return resolved;
+    });
+  };
+
+  const updateActiveViewerDocId = (newId: string | null | ((prev: string | null) => string | null)) => {
+    setActiveViewerDocId((prev) => {
+      const resolved = typeof newId === 'function' ? newId(prev) : newId;
+      if (typeof window !== 'undefined' && resolved) {
+        try {
+          localStorage.setItem('lexquery_active_doc_id', resolved);
+        } catch (e) {}
+      }
+      return resolved;
+    });
+  };
+
   const fetchDocuments = async () => {
     try {
       const res = await fetch('/api/documents');
       if (res.ok) {
         const data = await res.json();
-        setDocuments(data.documents || []);
+        const docs = data.documents || [];
+        setDocuments(docs);
 
-        // Default selections if none
-        if (data.documents && data.documents.length > 0) {
-          setSelectedDocIds((prev) => (prev.length === 0 ? [data.documents[0].id] : prev));
-          setActiveViewerDocId((prev) => prev || data.documents[0].id);
+        // Restore saved selections or default
+        if (docs.length > 0) {
+          const docIdSet = new Set(docs.map((d: any) => d.id));
+
+          let savedSelected: string[] = [];
+          let savedActive: string | null = null;
+          if (typeof window !== 'undefined') {
+            try {
+              const raw = localStorage.getItem('lexquery_selected_doc_ids');
+              if (raw) savedSelected = JSON.parse(raw);
+              savedActive = localStorage.getItem('lexquery_active_doc_id');
+            } catch (e) {}
+          }
+
+          const validSelected = savedSelected.filter((id) => docIdSet.has(id));
+
+          setSelectedDocIds((prev) => {
+            if (prev.length > 0) return prev;
+            if (validSelected.length > 0) return validSelected;
+            return [docs[0].id];
+          });
+
+          setActiveViewerDocId((prev) => {
+            if (prev && docIdSet.has(prev)) return prev;
+            if (savedActive && docIdSet.has(savedActive)) return savedActive;
+            if (validSelected.length > 0) return validSelected[0];
+            return docs[0].id;
+          });
         }
       }
     } catch (err) {
@@ -47,30 +96,28 @@ export default function Home() {
   }, []);
 
   const handleToggleSelect = (id: string) => {
-    setSelectedDocIds((prev) =>
+    updateSelectedDocIds((prev) =>
       prev.includes(id) ? prev.filter((d) => d !== id) : [...prev, id]
     );
   };
 
   const handleSelectAll = () => {
-    setSelectedDocIds(documents.map((d) => d.id));
+    updateSelectedDocIds(documents.map((d) => d.id));
   };
 
   const handleClearSelection = () => {
-    setSelectedDocIds([]);
+    updateSelectedDocIds([]);
   };
 
   const handleOpenDocument = (id: string) => {
-    setActiveViewerDocId(id);
-    if (!selectedDocIds.includes(id)) {
-      setSelectedDocIds([id]);
-    }
+    updateActiveViewerDocId(id);
+    updateSelectedDocIds((prev) => (prev.includes(id) ? prev : [...prev, id]));
     setActiveTab('workspace');
   };
 
   const handleQuoteClick = (quote: ChatQuote) => {
     if (quote.docId) {
-      setActiveViewerDocId(quote.docId);
+      updateActiveViewerDocId(quote.docId);
     }
     setActiveHighlight({
       documentId: quote.docId,
