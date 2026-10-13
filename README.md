@@ -217,7 +217,7 @@ A 150-page commercial contract contains ~60,000–90,000 words, exceeding typica
 
 ## 📂 Submission Documents & References
 - **Technical Note:** [`docs/submission/technical-note.md`](./docs/submission/technical-note.md)
-- **Demo Video Recording Script (3-5 min):** [`docs/submission/demo-video-script.md`](./docs/submission/demo-video-script.md)
+
 - **Architecture & Design Spec:** [`docs/superpowers/specs/2026-10-08-legal-contract-analyzer-design.md`](./docs/superpowers/specs/2026-10-08-legal-contract-analyzer-design.md)
 
 ---
